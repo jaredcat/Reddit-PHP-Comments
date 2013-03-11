@@ -1,3 +1,6 @@
+/*-------------------------------------------------------
+ * crazy shit going on up here. i did not write this code
+ --------------------------------------------------------*/
 <?php
 	function get_redirect_url($url){
 		$redirect_url = null; 
@@ -52,11 +55,15 @@
 	}
 
 ?>
+/*------------------
+ * end of crazy shit
+ -------------------*/
+
 <?php 
 	$current_page = $_SERVER["SERVER_NAME"].$_SERVER["REQUEST_URI"];
-	$comment_url = get_final_url("http://www.reddit.com/".$current_page);
+	$comment_url = get_final_url("http://www.reddit.com/".$current_page); //get_final_url traces reddit redirects: if posted to reddit returns url to comments, if not then returns reddit.com/s/$current_page
 	$json_url = $comment_url.".json";
-	$download=json_decode(file_get_contents($json_url));
+	$download=json_decode(file_get_contents($json_url)); //json_decode(wp_get_remote($json_url)) supposedly proper for WordPress, seesms to break it though.
 	//$comment_url = ("http://www.reddit.com/r/csuf/comments/18x6tu/mark_your_calendars_first_meetup_of_the_semester/"); //testdata
 	//$download = json_decode(file_get_contents('http://www.reddit.com/r/csuf/comments/18x6tu/mark_your_calendars_first_meetup_of_the_semester/.json')); //testdata
 	if ($download != null){
