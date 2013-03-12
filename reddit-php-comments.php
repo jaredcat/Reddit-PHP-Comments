@@ -63,31 +63,35 @@
 	if ('open' == $post->comment_status) {	
 		$current_page = $_SERVER["SERVER_NAME"].$_SERVER["REQUEST_URI"];
 		$comment_url = get_final_url("http://www.reddit.com/".$current_page);
-		$json_url = $comment_url.".json";
-		$download = json_decode(wp_remote_retrieve_body(wp_remote_get($json_url)));
-		//$comment_url = ("http://www.reddit.com/r/csuf/comments/18x6tu/mark_your_calendars_first_meetup_of_the_semester/"); //testdata
-		//$download = json_decode(wp_remote_retrieve_body(wp_remote_get('http://www.reddit.com/r/csuf/comments/18x6tu/mark_your_calendars_first_meetup_of_the_semester/.json'))); //testdata
-		if ($comment_url != "http://www.reddit.com/s/http://".$current_page && $download != null){ ?>
-			<ul>
-		<?php foreach ($download as $comments){
-				foreach ($comments->data->children as $comment){
-					if($comment->data->body != null){
-						?><li><a href="http://www.reddit.com/user/<?php echo($comment->data->author)?>" target="_blank">
-							<?php echo html_entity_decode($comment->data->author); ?></a><br /><?php
-						echo html_entity_decode($comment->data->body); ?></li><br /><br /><ul><?php
-						foreach($comment->data->replies->data->children as $reply){
-							?><li><a href="http://www.reddit.com/user/<?php echo($reply->data->author)?>" target="_blank">
-								<?php echo html_entity_decode($reply->data->author); ?></a><br /><?php
-							echo html_entity_decode($reply->data->body_html); ?></li><br /><?php
-						} ?>
-						</ul><?php
-					}
-				} 
-			} ?>
-			</ul>
-		<?php }else{ ?>
-			<div id="comment-section" class="nocomments">
-				<p>No comments yet! Click <a href="<?php echo $comment_url ?>" target="_blank">here</a> to add a comment.</p>
-			</div>
-		<?php } 
+		if ($comment_url != "http://www.reddit.com/s/http://".$current_page) { //check is has been submitted to reddit based on redirection provided by visting 	reddit.com/{$current_page}
+			$json_url = $comment_url.".json";
+			$download = json_decode(wp_remote_retrieve_body(wp_remote_get($json_url)));
+			//$comment_url = ("http://www.reddit.com/r/csuf/comments/18x6tu/mark_your_calendars_first_meetup_of_the_semester/"); //testdata
+			//$download = json_decode(wp_remote_retrieve_body(wp_remote_get('http://www.reddit.com/r/csuf/comments/18x6tu/mark_your_calendars_first_meetup_of_the_semester/.json'))); //testdata
+			if($download != null){ ?>
+				<ul>
+				<?php foreach ($download as $comments){
+					foreach ($comments->data->children as $comment){
+						if($comment->data->body != null){
+							?><li><a href="http://www.reddit.com/user/<?php echo($comment->data->author)?>" target="_blank">
+								<?php echo html_entity_decode($comment->data->author); ?></a><br /><?php
+							echo html_entity_decode($comment->data->body); ?></li><br /><br /><ul><?php
+							foreach($comment->data->replies->data->children as $reply){
+								?><li><a href="http://www.reddit.com/user/<?php echo($reply->data->author)?>" target="_blank">
+									<?php echo html_entity_decode($reply->data->author); ?></a><br /><?php
+								echo html_entity_decode($reply->data->body_html); ?></li><br /><?php
+							} ?>
+							</ul><?php
+						}
+					} 
+				} ?>
+				</ul>
+			<?php }else{ //error message if page has no comments ?>
+				<div id="comment-section" class="nocomments">
+					<p>No comments yet! Click <a href="<?php echo $comment_url ?>" target="_blank">here</a> to add a comment.</p>
+				</div>
+			<?php } 
+		}else{ 
+			 //Code here for error messages if page hasn't been submitted to reddit
+		}
 	} ?>
