@@ -87,7 +87,7 @@
 			</ul>
 		<?php }else{ ?>
 			<div id="comment-section" class="nocomments">
-				<p>No comments yet! Click <a href="'.$comment_url.'" target="_blank">here</a> to add a comment.</p>
+				<p>No comments yet! Click <a href="<?php echo $comment_url ?>" target="_blank">here</a> to add a comment.</p>
 			</div>
 		<?php } 
 	} ?>
