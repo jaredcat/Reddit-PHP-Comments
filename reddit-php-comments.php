@@ -67,9 +67,9 @@
 		$download = json_decode(wp_remote_retrieve_body(wp_remote_get($json_url)));
 		//$comment_url = ("http://www.reddit.com/r/csuf/comments/18x6tu/mark_your_calendars_first_meetup_of_the_semester/"); //testdata
 		//$download = json_decode(wp_remote_retrieve_body(wp_remote_get('http://www.reddit.com/r/csuf/comments/18x6tu/mark_your_calendars_first_meetup_of_the_semester/.json'))); //testdata
-		if ($download != null){ ?>
+		if ($comment_url != "http://www.reddit.com/s/http://".$current_page && $download != null){ ?>
 			<ul>
-			<?php foreach ($download as $comments){
+		<?php foreach ($download as $comments){
 				foreach ($comments->data->children as $comment){
 					if($comment->data->body != null){
 						?><li><a href="http://www.reddit.com/user/<?php echo($comment->data->author)?>" target="_blank">
