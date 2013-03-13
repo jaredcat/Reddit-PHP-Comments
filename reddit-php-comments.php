@@ -86,7 +86,7 @@
 			$download = json_decode(wp_remote_retrieve_body(wp_remote_get($json_url)));
 			//$comment_url = ("http://www.reddit.com/r/csuf/comments/18x6tu/mark_your_calendars_first_meetup_of_the_semester/"); //testdata
 			//$download = json_decode(wp_remote_retrieve_body(wp_remote_get('http://www.reddit.com/r/csuf/comments/18x6tu/mark_your_calendars_first_meetup_of_the_semester/.json'))); //testdata
-			if($download != null){ ?>
+			if($download[1]->data->children[0]->data != null){ ?>
 				<strong><a href="<?php echo $comment_url; ?>" target="_blank">Click Here</a> to add a comment.</strong><br /><br /><br />
 				<ul>
 				<?php foreach ($download as $comments){
