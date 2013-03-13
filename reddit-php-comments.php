@@ -54,23 +54,26 @@
 			}
 		}
 /*Begin: THANKS JAY */
-		function getreplies($comment, $indent = 0) {
+		function getreplies($comment) {
 			if($comment->data->body != null) {
-				$spaces = str_repeat(" ",$indent);
-				echo $spaces . '<li><a href="http://www.reddit.com/user/' . $comment->data->author . '" target="_blank">';
+				echo $spaces . '<p class="tagline"><a href="http://www.reddit.com/user/' . $comment->data->author . '" target="_blank">';
 				echo html_entity_decode($comment->data->author) .'</a>';
-				echo '<br />' . html_entity_decode($comment->data->body) . '</li><br />' . "\n";
+				if($comment->data->author_flair_text != null){
+					echo '  <span class="flair" title="' . $comment->data->author_flair_text . '">' .  $comment->data->author_flair_text . '</span>';
+				};
+				$utc_str = gmdate("M d Y H:i:s", $comment->data->created_utc);
+				echo '  <time title"=' . $utc_str . '">' . $utc_str . '</time></p>';
+				echo '<br />' . "\n" . '<div class="usertext-body">' . "\n" . '<div class="md">' . "\n" . '<p>' . html_entity_decode($comment->data->body) . '</p>' . "\n" . '</div>' . "\n" . '</div>' . "\n" . '<br />' . "\n";
 				if ($comment->data->replies != null) {
-					echo str_repeat(" ",$indent) . '<ul style="padding-left: 25px !important;">' . "\n";
-					$indent += 1;
-						foreach($comment->data->replies->data->children as $reply){
-						getreplies($reply, $indent);
+					echo '<div class="child">' . "\n";
+					foreach($comment->data->replies->data->children as $reply){
+						getreplies($reply);
 					}
-					echo str_repeat(" ",$indent - 1) . '</ul>' . "\n";
+					echo '</div>' . "\n";
 				}
 			}
 		}
-//*End: THANKS JAY */			
+/*End: THANKS JAY */		
 	?>
 /*------------------
  * end of crazy shit
