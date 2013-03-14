@@ -87,7 +87,7 @@
 				$utc = $comment->data->created_utc;
 				$utc_str = gmdate("M d Y H:i:s", $utc);
 				echo '  <time title"=' . $utc_str . '">' . time_ago_in_words($utc) . '</time></p>';
-				echo "\n" . '<div class="usertext-body">' . "\n" . '<div class="md">' . "\n" . '<p>' . html_entity_decode($comment->data->body) . '</p>' . "\n" . '</div>' . "\n" . '</div>' . "\n";
+				echo "\n" . '<div class="usertext-body">' . "\n" . html_entity_decode($comment->data->body_html) . "\n" . '</div>' . "\n";
 				if ($comment->data->replies != null) {
 					echo '<div class="child">' . "\n";
 					foreach($comment->data->replies->data->children as $reply){
@@ -110,6 +110,7 @@
 			$comment_url = ("http://www.reddit.com/r/csuf/comments/18x6tu/mark_your_calendars_first_meetup_of_the_semester/"); //testdata
 			$download = json_decode(wp_remote_retrieve_body(wp_remote_get('http://www.reddit.com/r/csuf/comments/18x6tu/mark_your_calendars_first_meetup_of_the_semester/.json'))); //testdata
 			if($download[1]->data->children[0]->data != null){ ?>
+				<base target="_blank">
 				<strong><a href="<?php echo $comment_url; ?>" target="_blank">Click Here</a> to add a comment.</strong><br /><br /><br />
 				<?php foreach ($download as $comments){
 					foreach ($comments->data->children as $comment){
