@@ -54,16 +54,40 @@
 			}
 		}
 /*Begin: THANKS JAY */
+		function time_ago_in_words($since) {
+			$chunks = array(
+				array(60 * 60 * 24 * 365 , 'year'),
+				array(60 * 60 * 24 * 30 , 'month'),
+				array(60 * 60 * 24 * 7, 'week'),
+				array(60 * 60 * 24 , 'day'),
+				array(60 * 60 , 'hour'),
+				array(60 , 'minute'),
+				array(1 , 'second')
+			);
+			for ($i = 0, $j = count($chunks); $i < $j; $i++) {
+				$seconds = $chunks[$i][0];
+				$name = $chunks[$i][1];
+				if (($count = floor((time()-$since) / $seconds)) != 0) {
+					break;
+				}
+			}
+			$print = ($count == 1) ? '1 '.$name.' ago': "$count {$name}s ago";
+			return $print;
+		 }
 		function getreplies($comment) {
 			if($comment->data->body != null) {
-				echo $spaces . '<p class="tagline"><a href="http://www.reddit.com/user/' . $comment->data->author . '" target="_blank">';
+				echo $spaces . '<p class="tagline"><a href="http://www.reddit.com/user/' . $comment->data->author . '" target="_blank" class="author">';
 				echo html_entity_decode($comment->data->author) .'</a>';
 				if($comment->data->author_flair_text != null){
 					echo '  <span class="flair" title="' . $comment->data->author_flair_text . '">' .  $comment->data->author_flair_text . '</span>';
 				};
-				$utc_str = gmdate("M d Y H:i:s", $comment->data->created_utc);
-				echo '  <time title"=' . $utc_str . '">' . $utc_str . '</time></p>';
-				echo '<br />' . "\n" . '<div class="usertext-body">' . "\n" . '<div class="md">' . "\n" . '<p>' . html_entity_decode($comment->data->body) . '</p>' . "\n" . '</div>' . "\n" . '</div>' . "\n" . '<br />' . "\n";
+				$count = $comment->data->ups - $comment->data->downs;
+				$score = ($count == 1) ? '1 point' : "$count points";
+				echo '<span class="score">' . $score . '</span>';
+				$utc = $comment->data->created_utc;
+				$utc_str = gmdate("M d Y H:i:s", $utc);
+				echo '  <time title"=' . $utc_str . '">' . time_ago_in_words($utc) . '</time></p>';
+				echo "\n" . '<div class="usertext-body">' . "\n" . '<div class="md">' . "\n" . '<p>' . html_entity_decode($comment->data->body) . '</p>' . "\n" . '</div>' . "\n" . '</div>' . "\n";
 				if ($comment->data->replies != null) {
 					echo '<div class="child">' . "\n";
 					foreach($comment->data->replies->data->children as $reply){
@@ -73,38 +97,32 @@
 				}
 			}
 		}
-/*End: THANKS JAY */		
+/*End: THANKS JAY */			
 	?>
-/*------------------
- * end of crazy shit
- -------------------*/
-
 	<?php
 	if ('open' == $post->comment_status) {
-		$download = null;
-		$current_page = $_SERVER["SERVER_NAME"].$_SERVER["REQUEST_URI"];
-		$comment_url = get_final_url("http://www.reddit.com/".$current_page);
-		if ($comment_url != "http://www.reddit.com/s/http://".$current_page) { //check is has been submitted to reddit based on redirection provided by visting 	reddit.com/{$current_page}
-			$json_url = $comment_url.".json";
-			$download = json_decode(wp_remote_retrieve_body(wp_remote_get($json_url)));
-			//$comment_url = ("http://www.reddit.com/r/csuf/comments/18x6tu/mark_your_calendars_first_meetup_of_the_semester/"); //testdata
-			//$download = json_decode(wp_remote_retrieve_body(wp_remote_get('http://www.reddit.com/r/csuf/comments/18x6tu/mark_your_calendars_first_meetup_of_the_semester/.json'))); //testdata
+		//$download = null;
+		//$current_page = $_SERVER["SERVER_NAME"].$_SERVER["REQUEST_URI"];
+		//$comment_url = get_final_url("http://www.reddit.com/".$current_page);
+		//if ($comment_url != "http://www.reddit.com/s/http://".$current_page) { //check is has been submitted to reddit based on redirection provided by visting 	reddit.com/{$current_page}
+			//$json_url = $comment_url.".json";
+			//$download = json_decode(wp_remote_retrieve_body(wp_remote_get($json_url)));
+			$comment_url = ("http://www.reddit.com/r/csuf/comments/18x6tu/mark_your_calendars_first_meetup_of_the_semester/"); //testdata
+			$download = json_decode(wp_remote_retrieve_body(wp_remote_get('http://www.reddit.com/r/csuf/comments/18x6tu/mark_your_calendars_first_meetup_of_the_semester/.json'))); //testdata
 			if($download[1]->data->children[0]->data != null){ ?>
 				<strong><a href="<?php echo $comment_url; ?>" target="_blank">Click Here</a> to add a comment.</strong><br /><br /><br />
-				<ul>
 				<?php foreach ($download as $comments){
 					foreach ($comments->data->children as $comment){
 						getreplies($comment);
 					} 
 				} ?>
-				</ul>
 				<br /><br /><strong><a href="<?php echo $comment_url; ?>" target="_blank">Click Here</a> to add a comment.</strong>
 			<?php }else{ //error message if page has no comments ?>
 				<div id="comment-section" class="nocomments">
 					<p>there doesn't seem to be anything <a href="<?php echo $comment_url; ?>" target="_blank">here</a></p>
 				</div>
 			<?php } 
-		}else{ 
+		//}else{ 
 			 //Code here for error messages if page hasn't been submitted to reddit
-		}
+		//}
 	} ?>
